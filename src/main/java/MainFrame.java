@@ -58,7 +58,7 @@ public class MainFrame extends JFrame {
     }
 
     public static void main(String[] args) {
-        MainFrame myFrame = new MainFrame();
+        new MainFrame();
     }
 
     public void resetBothInput(){
@@ -72,23 +72,29 @@ public class MainFrame extends JFrame {
             e.consume();
         }
     }
-    public void primaryFieldToSecondaryField(){
-        try{
-            Double primaryUnit = Double.valueOf(primaryField.getText());
-        }catch (NumberFormatException nfe){
-            JOptionPane.showMessageDialog(this, nfe.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
+    public void primaryFieldToSecondaryField() {
+        double primaryUnit;
+        try {
+            primaryUnit = Double.parseDouble(primaryField.getText());
+        } catch (NumberFormatException nfe) {
+            JOptionPane.showMessageDialog(this, nfe.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        double primaryUnit = Double.parseDouble(primaryField.getText());
         double secondaryUnit = primaryUnit / 2.54;
-        Double secondaryUnitRounding = Precision.round(secondaryUnit,2);
+        Double secondaryUnitRounding = Precision.round(secondaryUnit, 2);
         secondaryField.setText(String.valueOf(secondaryUnitRounding));
     }
 
-    public void secondaryFieldToPrimaryField(){
-        double secondaryUnit = Double.parseDouble(secondaryField.getText());
+    public void secondaryFieldToPrimaryField() {
+        double secondaryUnit;
+        try {
+            secondaryUnit = Double.parseDouble(secondaryField.getText());
+        } catch (NumberFormatException nfe) {
+            JOptionPane.showMessageDialog(this, nfe.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         double primaryUnit = secondaryUnit * 2.54;
-        Double primaryUnitRounding = Precision.round(primaryUnit,2);
+        Double primaryUnitRounding = Precision.round(primaryUnit, 2);
         primaryField.setText(String.valueOf(primaryUnitRounding));
     }
 }

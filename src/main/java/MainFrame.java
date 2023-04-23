@@ -19,14 +19,11 @@ public class MainFrame extends JFrame {
         setVisible(true);
         setLocationRelativeTo(null);
 
-        buttonConversor.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(focusPrimaryField){
-                    primaryFieldToSecondaryField();
-                }else {
-                    secondaryFieldToPrimaryField();
-                }
+        buttonConversor.addActionListener(e -> {
+            if(focusPrimaryField){
+                primaryFieldToSecondaryField();
+            }else {
+                secondaryFieldToPrimaryField();
             }
         });
 
@@ -71,20 +68,26 @@ public class MainFrame extends JFrame {
     public void validateInput(KeyEvent e){
         char character = e.getKeyChar();
 
-        if (((character < '0') || (character > '9')) && (character != '\b') && (character != '.')) {
+        if (((character < '0') || (character > '9')) && (character != '\b') && (character != '.') && (character != '-')) {
             e.consume();
         }
     }
     public void primaryFieldToSecondaryField(){
-        Double primaryUnit = Double.valueOf(primaryField.getText());
-        Double secondaryUnit = primaryUnit / 2.54;
+        try{
+            Double primaryUnit = Double.valueOf(primaryField.getText());
+        }catch (NumberFormatException nfe){
+            JOptionPane.showMessageDialog(this, nfe.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        double primaryUnit = Double.parseDouble(primaryField.getText());
+        double secondaryUnit = primaryUnit / 2.54;
         Double secondaryUnitRounding = Precision.round(secondaryUnit,2);
         secondaryField.setText(String.valueOf(secondaryUnitRounding));
     }
 
     public void secondaryFieldToPrimaryField(){
-        Double secondaryUnit = Double.valueOf(secondaryField.getText());
-        Double primaryUnit = secondaryUnit * 2.54;
+        double secondaryUnit = Double.parseDouble(secondaryField.getText());
+        double primaryUnit = secondaryUnit * 2.54;
         Double primaryUnitRounding = Precision.round(primaryUnit,2);
         primaryField.setText(String.valueOf(primaryUnitRounding));
     }

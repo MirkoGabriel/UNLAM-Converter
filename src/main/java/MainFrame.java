@@ -1,8 +1,7 @@
 import javax.swing.*;
 import java.awt.event.*;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.math3.util.Precision;
 
 public class MainFrame extends JFrame {
@@ -15,8 +14,8 @@ public class MainFrame extends JFrame {
     private JLabel primaryFieldLabel;
     private JLabel secondaryFieldLabel;
     private Boolean focusPrimaryField;
-    private static final List<Double> TO_CONVERTER_UNITS =  Arrays.asList(2.54, 1000.0, 442.0);
-    public double converterUnitSelected = TO_CONVERTER_UNITS.get(0);
+    private final List<StandardConverter> converters;
+    private StandardConverter converterSelected;
 
     public MainFrame() {
         setContentPane(mainPanel);
@@ -25,12 +24,17 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
         setLocationRelativeTo(null);
+        converters = new ArrayList<>();
+        converters.add(new CmToInConverter());
+        converters.add(new MeToKmConverter());
+        converters.forEach(c -> comboBox1.addItem(c.getType()));
+        getConverterSelected();
 
         buttonConversor.addActionListener(e -> {
-            if(focusPrimaryField){
-                primaryFieldToSecondaryField(converterUnitSelected);
-            }else {
-                secondaryFieldToPrimaryField(converterUnitSelected);
+            if (focusPrimaryField) {
+                primaryFieldToSecondaryField();
+            } else {
+                secondaryFieldToPrimaryField();
             }
         });
 
@@ -63,29 +67,8 @@ public class MainFrame extends JFrame {
             }
         });
         comboBox1.addActionListener(e -> {
-            int kindOfconverterPostion = comboBox1.getSelectedIndex();
-            switch (kindOfconverterPostion){
-                case 0:
-                    resetBothInput();
-                    converterUnitSelected = TO_CONVERTER_UNITS.get(0);
-                    primaryFieldLabel.setText("Centimetres");
-                    secondaryFieldLabel.setText("Inches");
-                    break;
-                case 1:
-                    resetBothInput();
-                    converterUnitSelected = TO_CONVERTER_UNITS.get(1);
-                    primaryFieldLabel.setText("Metres");
-                    secondaryFieldLabel.setText("Kilometres");
-                    break;
-                case 2:
-                    resetBothInput();
-                    converterUnitSelected = TO_CONVERTER_UNITS.get(2);
-                    primaryFieldLabel.setText("Argentine pesos");
-                    secondaryFieldLabel.setText("Dollars");
-                    break;
-                default:
-                    break;
-            }
+            getConverterSelected();
+            resetBothInput();
         });
     }
 
@@ -93,18 +76,23 @@ public class MainFrame extends JFrame {
         new MainFrame();
     }
 
-    public void resetBothInput(){
+    public void resetBothInput() {
         secondaryField.setText("");
         primaryField.setText("");
     }
-    public void validateInput(KeyEvent e){
+
+    public void validateInput(KeyEvent e) {
         char character = e.getKeyChar();
 
-        if (((character < '0') || (character > '9')) && (character != '\b') && (character != '.') && (character != '-')) {
+        if (((character < '0') || (character > '9'))
+                && (character != '\b')
+                && (character != '.')
+                && (character != '-')) {
             e.consume();
         }
     }
-    public void primaryFieldToSecondaryField(double unitToConverter) {
+
+    public void primaryFieldToSecondaryField() {
         double primaryUnit;
         try {
             primaryUnit = Double.parseDouble(primaryField.getText());
@@ -112,12 +100,12 @@ public class MainFrame extends JFrame {
             JOptionPane.showMessageDialog(this, nfe.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        double secondaryUnit = primaryUnit / unitToConverter;
+        double secondaryUnit = converterSelected.convertFirstValueToSecondValue(primaryUnit);
         Double secondaryUnitRounding = Precision.round(secondaryUnit, 5);
         secondaryField.setText(String.valueOf(secondaryUnitRounding));
     }
 
-    public void secondaryFieldToPrimaryField(double unitToConverter) {
+    public void secondaryFieldToPrimaryField() {
         double secondaryUnit;
         try {
             secondaryUnit = Double.parseDouble(secondaryField.getText());
@@ -125,8 +113,15 @@ public class MainFrame extends JFrame {
             JOptionPane.showMessageDialog(this, nfe.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        double primaryUnit = secondaryUnit * unitToConverter;
+        double primaryUnit = converterSelected.convertSecondValueToFirstValue(secondaryUnit);
         Double primaryUnitRounding = Precision.round(primaryUnit, 5);
         primaryField.setText(String.valueOf(primaryUnitRounding));
+    }
+
+    private void getConverterSelected() {
+        converterSelected = converters.get(comboBox1.getSelectedIndex());
+
+        primaryFieldLabel.setText(converterSelected.getFirstLabel());
+        secondaryFieldLabel.setText(converterSelected.getSecondLabel());
     }
 }

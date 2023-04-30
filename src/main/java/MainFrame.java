@@ -109,7 +109,7 @@ public class MainFrame extends JFrame {
     public void secondaryFieldToPrimaryField() {
         double secondaryUnit;
         try {
-            secondaryUnit = Double.parseDouble(secondaryField.getText());
+            secondaryUnit = Double.parseDouble(secondaryField.getText().replace(",","."));
         } catch (NumberFormatException nfe) {
             JOptionPane.showMessageDialog(this, nfe.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return;

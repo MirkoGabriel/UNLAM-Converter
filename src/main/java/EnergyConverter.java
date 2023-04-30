@@ -19,8 +19,8 @@ public class EnergyConverter extends StandardConverter{
     }
 
     @Override
-    public Double convertFirstValueToSecondValue(Double Julio) {
-        return Julio / TO_CONVERT;
+    public Double convertFirstValueToSecondValue(Double julio) {
+        return julio / TO_CONVERT;
     }
     @Override
     public Double convertSecondValueToFirstValue(Double kilocalorie) {

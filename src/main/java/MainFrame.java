@@ -10,7 +10,7 @@ public class MainFrame extends JFrame {
     private JTextField primaryField;
     private JTextField secondaryField;
     private JPanel mainPanel;
-    private JComboBox comboBox1;
+    private JComboBox<String> comboBox1;
     private JLabel primaryFieldLabel;
     private JLabel secondaryFieldLabel;
     private Boolean focusPrimaryField;

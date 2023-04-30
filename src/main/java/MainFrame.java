@@ -25,18 +25,15 @@ public class MainFrame extends JFrame {
         setVisible(true);
         setLocationRelativeTo(null);
         converters = new ArrayList<>();
-        converters.add(new CmToInConverter());
-        converters.add(new MeToKmConverter());
+        converters.add(new LenghtConverter());
+        converters.add(new TemperatureConverter());
+        converters.add(new TimeConverter());
+        converters.add(new SpeedConverter());
+        converters.add(new EnergyConverter());
         converters.forEach(c -> comboBox1.addItem(c.getType()));
         getConverterSelected();
 
-        buttonConversor.addActionListener(e -> {
-            if (focusPrimaryField) {
-                primaryFieldToSecondaryField();
-            } else {
-                secondaryFieldToPrimaryField();
-            }
-        });
+        buttonConversor.addActionListener(e -> convertUnits());
 
         primaryField.addKeyListener(new KeyAdapter() {
             @Override
@@ -86,16 +83,20 @@ public class MainFrame extends JFrame {
 
         if (((character < '0') || (character > '9'))
                 && (character != '\b')
+                && (character != ',')
                 && (character != '.')
                 && (character != '-')) {
             e.consume();
+        }
+        if(character == KeyEvent.VK_ENTER){
+            convertUnits();
         }
     }
 
     public void primaryFieldToSecondaryField() {
         double primaryUnit;
         try {
-            primaryUnit = Double.parseDouble(primaryField.getText());
+            primaryUnit = Double.parseDouble(primaryField.getText().replace(",","."));
         } catch (NumberFormatException nfe) {
             JOptionPane.showMessageDialog(this, nfe.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -123,5 +124,13 @@ public class MainFrame extends JFrame {
 
         primaryFieldLabel.setText(converterSelected.getFirstLabel());
         secondaryFieldLabel.setText(converterSelected.getSecondLabel());
+    }
+
+    private void convertUnits(){
+        if (focusPrimaryField) {
+            primaryFieldToSecondaryField();
+        } else {
+            secondaryFieldToPrimaryField();
+        }
     }
 }
